@@ -19,6 +19,11 @@ GAMES = [
     ("7", "Ruby Draw Poker", "5-card draw", "ruby_draw_poker.py", (200, 50, 80)),
     ("8", "Brick Breakout", "Smash the wall", "brick_breakout.py", (80, 200, 255)),
     ("9", "Pipe Glide", "Fly the gap", "pipe_glide.py", (80, 220, 90)),
+    ("a", "Space Raiders", "Invader shooter", "space_raiders.py", (80, 220, 255)),
+    ("b", "Neon Pong", "Rally vs CPU", "neon_pong.py", (80, 255, 200)),
+    ("c", "Color Connect", "Four in a row", "color_connect.py", (240, 80, 90)),
+    ("d", "Neon Craps", "Pass-line dice", "neon_craps.py", (120, 220, 90)),
+    ("e", "Color Stack", "Falling blocks", "color_stack.py", (200, 120, 255)),
 ]
 
 
@@ -29,12 +34,12 @@ def run_game(filename: str) -> None:
 
 def main() -> None:
     pygame.init()
-    screen = pygame.display.set_mode((900, 760))
+    screen = pygame.display.set_mode((980, 720))
     pygame.display.set_caption("ElbowOS Arcade — Colorful Python Games")
     clock = pygame.time.Clock()
-    title_font = pygame.font.SysFont("arial", 42, bold=True)
-    item_font = pygame.font.SysFont("arial", 24, bold=True)
-    small = pygame.font.SysFont("arial", 16)
+    title_font = pygame.font.SysFont("arial", 40, bold=True)
+    item_font = pygame.font.SysFont("arial", 22, bold=True)
+    small = pygame.font.SysFont("arial", 15)
     hint = pygame.font.SysFont("arial", 16)
 
     running = True
@@ -49,37 +54,38 @@ def main() -> None:
                     running = False
                 else:
                     for key, *_rest, filename, _c in GAMES:
-                        if event.unicode == key:
+                        if event.unicode.lower() == key:
                             run_game(filename)
             elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 clicked = True
 
         screen.fill((12, 16, 32))
-        for i in range(22):
+        for i in range(24):
             shade = 18 + i * 3
-            pygame.draw.rect(screen, (shade, 12, 40 + i * 2), (0, i * 36, 900, 36))
+            pygame.draw.rect(screen, (shade, 12, 40 + i * 2), (0, i * 32, 980, 32))
 
         title = title_font.render("ELBOWOS ARCADE", True, (255, 230, 120))
-        screen.blit(title, title.get_rect(center=(450, 48)))
-        sub = small.render("Full-colour Python 3 games  ·  x.com/ElbowOS", True, (200, 210, 230))
-        screen.blit(sub, sub.get_rect(center=(450, 88)))
+        screen.blit(title, title.get_rect(center=(490, 42)))
+        sub = small.render("Full-colour Python 3 games  ·  https://x.com/ElbowOS", True, (200, 210, 230))
+        screen.blit(sub, sub.get_rect(center=(490, 78)))
 
         hover_file = None
         for i, (key, name, blurb, filename, color) in enumerate(GAMES):
-            rect = pygame.Rect(120, 112 + i * 66, 660, 58)
+            col, row = i % 2, i // 2
+            rect = pygame.Rect(40 + col * 470, 108 + row * 76, 440, 66)
             hot = rect.collidepoint(mx, my)
             bg = tuple(min(255, c + 40) for c in color) if hot else color
             pygame.draw.rect(screen, bg, rect, border_radius=14)
             pygame.draw.rect(screen, (20, 20, 30), rect.inflate(-8, -8), border_radius=10)
             label = item_font.render(f"{key}  {name}", True, bg)
-            screen.blit(label, (150, rect.y + 6))
+            screen.blit(label, (rect.x + 22, rect.y + 10))
             desc = small.render(blurb, True, (210, 215, 230))
-            screen.blit(desc, (190, rect.y + 32))
+            screen.blit(desc, (rect.x + 48, rect.y + 38))
             if hot and clicked:
                 hover_file = filename
 
-        foot = hint.render("Click a game or press 1–9   ·   Esc to quit", True, (160, 170, 190))
-        screen.blit(foot, foot.get_rect(center=(450, 730)))
+        foot = hint.render("Click a game or press 1–9 / a–e   ·   Esc to quit", True, (160, 170, 190))
+        screen.blit(foot, foot.get_rect(center=(490, 690)))
         pygame.display.flip()
         clock.tick(60)
 
